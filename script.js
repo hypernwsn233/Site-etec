@@ -189,75 +189,118 @@
       }
     };
 
-    // ==========================================
-    // BOSS NSA
-    // ==========================================
-    const boss = {
-      active: false, x: 550, y: 150, w: 180, h: 180, hp: 100, maxHp: 100,
-      tick: 0, frame: 0, mode: 'idle', attackCooldown: 120,
+ // ==========================================
+// BOSS NSA (Corte Exato em Grade 4x3)
+// ==========================================
+const boss = {
+  active: false, 
+  x: 550, 
+  y: 150, 
+  w: 180, 
+  h: 180, 
+  hp: 100, 
+  maxHp: 100,
+  tick: 0, 
+  frame: 0, 
+  mode: 'idle', 
+  attackCooldown: 120, 
 
-      idleCrops: [[0.02, 0.0, 0.22, 0.33], [0.27, 0.0, 0.22, 0.33], [0.52, 0.0, 0.22, 0.33]],
-      punchCrops: [[0.02, 0.33, 0.21, 0.33], [0.27, 0.33, 0.24, 0.33]],
-      summonCrops: [[0.51, 0.33, 0.22, 0.33], [0.76, 0.33, 0.22, 0.33]],
+  // Mapeamento usando a grade (Coluna e Linha) em vez de porcentagens quebradas
+  idleFrames: [
+    { col: 0, row: 0 }, // N normal
+    { col: 1, row: 0 }, // N segurando a placa
+    { col: 2, row: 0 }  // Placa brilhando
+  ],
+  punchFrames: [
+    { col: 0, row: 1 }, // Preparando o soco
+    { col: 1, row: 1 }  // Soco esticado
+  ],
+  summonFrames: [
+    { col: 2, row: 1 }, // Braços pra cima (invocando)
+    { col: 0, row: 2 }  // Olho vermelho 
+  ],
 
-      update() {
-        this.tick++;
-        if (this.tick % 10 === 0) {
-          let currentList = this.idleCrops;
-          if (this.mode === 'punch') currentList = this.punchCrops;
-          if (this.mode === 'summon') currentList = this.summonCrops;
-          this.frame = (this.frame + 1) % currentList.length;
+  update() {
+    this.tick++;
+    if (this.tick % 10 === 0) {
+      let currentList = this.idleFrames;
+      if (this.mode === 'punch') currentList = this.punchFrames;
+      if (this.mode === 'summon') currentList = this.summonFrames;
+      
+      this.frame = (this.frame + 1) % currentList.length;
+    }
+
+    this.attackCooldown--;
+    if (this.attackCooldown <= 0) {
+      this.attackCooldown = 120 + Math.random() * 60; 
+      this.frame = 0; 
+      
+      if (Math.random() > 0.5) {
+        this.mode = 'punch';
+        setTimeout(() => { this.mode = 'idle'; }, 600);
+        
+        bossProjectiles.push({ 
+            x: this.x + 20, 
+            y: this.y + 80 + (Math.random() * 40 - 20), 
+            vx: -(6 + Math.random() * 3),               
+            text: 'F'                                   
+        });
+      } else {
+        this.mode = 'summon';
+        setTimeout(() => { this.mode = 'idle'; }, 800);
+        
+        let qtd = Math.random() > 0.4 ? 2 : 1;
+        for (let i = 0; i < qtd; i++) {
+          bats.push({
+            x: this.x + 80, 
+            y: this.y + 40, 
+            targetX: 50 + Math.random() * 350, 
+            targetY: 30 + Math.random() * 120, 
+            w: 60, h: 45, hp: 2, state: 'flying', timer: 0, tick: 0
+          });
         }
-
-        this.attackCooldown--;
-        if (this.attackCooldown <= 0) {
-          this.attackCooldown = 120 + Math.random() * 60;
-          this.frame = 0;
-
-          if (Math.random() > 0.5) {
-            this.mode = 'punch';
-            setTimeout(() => { this.mode = 'idle'; }, 600);
-            bossProjectiles.push({
-              x: this.x + 20, y: this.y + 80 + (Math.random() * 40 - 20),
-              vx: -(6 + Math.random() * 3), text: 'F'
-            });
-          } else {
-            this.mode = 'summon';
-            setTimeout(() => { this.mode = 'idle'; }, 800);
-            let qtd = Math.random() > 0.4 ? 2 : 1;
-            for (let i = 0; i < qtd; i++) {
-              bats.push({
-                x: this.x + 80, y: this.y + 40,
-                targetX: 50 + Math.random() * 350, targetY: 30 + Math.random() * 120,
-                w: 60, h: 45, hp: 2, state: 'flying', timer: 0, tick: 0
-              });
-            }
-          }
-        }
-      },
-
-      draw() {
-        const floatY = this.y + Math.sin(this.tick * 0.06) * 10;
-        if (bossLoaded) {
-          let currentList = this.idleCrops;
-          if (this.mode === 'punch') currentList = this.punchCrops;
-          if (this.mode === 'summon') currentList = this.summonCrops;
-          const cropRatio = currentList[this.frame % currentList.length];
-
-          const sx = cropRatio[0] * bossImg.naturalWidth;
-          const sy = cropRatio[1] * bossImg.naturalHeight;
-          const sw = cropRatio[2] * bossImg.naturalWidth;
-          const sh = cropRatio[3] * bossImg.naturalHeight;
-
-          ctx.drawImage(bossImg, sx, sy, sw, sh, this.x, floatY, this.w, this.h);
-        }
-
-        ctx.fillStyle = "#222"; ctx.fillRect(this.x + 10, floatY - 20, 160, 12);
-        ctx.fillStyle = "#ef4444"; ctx.fillRect(this.x + 12, floatY - 18, (156) * (this.hp / this.maxHp), 8);
-        ctx.strokeStyle = "#ffcc00"; ctx.lineWidth = 2; ctx.strokeRect(this.x + 10, floatY - 20, 160, 12);
-        ctx.fillStyle = "#fff"; ctx.font = "10px monospace"; ctx.fillText("NSA - SISTEMA", this.x + 15, floatY - 25);
       }
-    };
+    }
+  },
+
+  draw() {
+    const floatY = this.y + Math.sin(this.tick * 0.06) * 10;
+    
+    if (bossLoaded) {
+      let currentList = this.idleFrames;
+      if (this.mode === 'punch') currentList = this.punchFrames;
+      if (this.mode === 'summon') currentList = this.summonFrames;
+      
+      const currentFrame = currentList[this.frame % currentList.length];
+
+      // Divide a imagem exatamente em 4 colunas e 3 linhas
+      const frameWidth = bossImg.naturalWidth / 4;
+      const frameHeight = bossImg.naturalHeight / 3;
+
+      const sx = currentFrame.col * frameWidth;
+      const sy = currentFrame.row * frameHeight;
+
+      ctx.save();
+      // Este truque apaga o fundo preto do JPG automaticamente!
+      ctx.globalCompositeOperation = 'screen'; 
+      ctx.drawImage(bossImg, sx, sy, frameWidth, frameHeight, this.x, floatY, this.w, this.h);
+      ctx.restore();
+    }
+
+    // Barra de Vida
+    ctx.fillStyle = "#222"; 
+    ctx.fillRect(this.x + 10, floatY - 20, 160, 12);
+    ctx.fillStyle = "#ef4444"; 
+    ctx.fillRect(this.x + 12, floatY - 18, (156) * (this.hp / this.maxHp), 8);
+    ctx.strokeStyle = "#ffcc00"; 
+    ctx.lineWidth = 2; 
+    ctx.strokeRect(this.x + 10, floatY - 20, 160, 12);
+    ctx.fillStyle = "#fff"; 
+    ctx.font = "10px monospace"; 
+    ctx.fillText("NSA - SISTEMA", this.x + 15, floatY - 25);
+  }
+};
+
 
     // ==========================================
     // MORCEGOS E PROJÉTEIS
