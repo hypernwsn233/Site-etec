@@ -209,45 +209,4 @@
 
   <script src="script.js"></script>
 </body>
-</html><!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Resgate na Lauro Gomes - Semana da ETEC</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
-    body { background: #0d1117; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Courier New', Courier, monospace; color: #fff; }
-    #game-container { position: relative; width: 800px; height: 450px; border: 4px solid #b3261e; box-shadow: 0 0 30px rgba(179, 38, 30, 0.7); background: #161b22; overflow: hidden; }
-    canvas { display: block; image-rendering: pixelated; }
-    .screen-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(13, 17, 23, 0.9); z-index: 10; }
-    h1 { font-size: 32px; color: #ffcc00; text-shadow: 3px 3px #b3261e; margin-bottom: 20px; text-align: center; }
-    .btn-group { display: flex; gap: 15px; }
-    .btn { background: #b3261e; color: #fff; border: 3px solid #ffcc00; padding: 12px 24px; font-size: 18px; font-weight: bold; cursor: pointer; font-family: inherit; box-shadow: 4px 4px #000; transition: transform 0.1s; }
-    .btn:hover { background: #d90429; transform: scale(1.05); }
-    .btn:active { transform: translate(2px, 2px); }
-    #dialogue-box { position: absolute; bottom: 15px; left: 20px; right: 20px; height: 110px; background: rgba(0, 0, 0, 0.95); border: 3px solid #ffcc00; border-radius: 6px; display: none; padding: 12px 18px; z-index: 5; }
-    #dialogue-box .name { color: #00ffcc; font-weight: bold; font-size: 16px; margin-bottom: 6px; }
-    #dialogue-box .text { color: #fff; font-size: 14px; line-height: 1.4; }
-  </style>
-</head>
-<body>
-
-<div id="game-container">
-  <canvas id="gameCanvas" width="800" height="450"></canvas>
-  <div id="menu-screen" class="screen-overlay">
-    <h1>ETEC LAURO GOMES<br><span style="font-size: 18px; color: #fff;">Operação: Resgatar o LC</span></h1>
-    <div class="btn-group">
-      <button class="btn" id="start-btn">INICIAR JOGO</button>
-      <button class="btn" id="shop-btn" style="background: #2b4c7e;">LOJINHA</button>
-    </div>
-    <p style="margin-top: 25px; font-size: 12px; color: #8b949e;">[W/ESPAÇO] Pular • [S] Deslizar • [J/K] Atirar • [B] Pular pro Boss</p>
-  </div>
-  <div id="dialogue-box">
-    <div class="name" id="diag-name">NSA</div>
-    <div class="text" id="diag-text">Carregando...</div>
-  </div>
-</div>
-
-<script src="script.js"></script>
-</body>
 </html>
